@@ -35,6 +35,7 @@ public class PersonagemModel {
     private String desenho;
     private int idade;
     private String genero;
+    private String foto;
     @OneToMany(mappedBy = "personagem",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<CarrosModel> carros;

@@ -40,7 +40,7 @@ public class CarrosModel {
     @Column(name = "cor")
     private String cor;
     private String cambio;
-
+    private String foto;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "personagem_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // hibernateLazyInitializer para ignorar propriedades do Hibernate, e o handler para evitar problemas de serialização

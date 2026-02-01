@@ -18,4 +18,5 @@ public class PersonagemDTO {
     private Integer idade;
     private String genero;
     private List<CarrosModel> carros;
+    private String foto;
 }

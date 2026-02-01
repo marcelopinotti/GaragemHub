@@ -15,6 +15,7 @@ public class CarrosMapper {
         carrosModel.setPersonagem(carrosDTO.getPersonagem());
         carrosModel.setCambio(carrosDTO.getCambio());
         carrosModel.setCor(carrosDTO.getCor());
+        carrosModel.setFoto((carrosDTO.getFoto()));
         return carrosModel;
     }
     public CarrosDTO map(CarrosModel carrosModel) {
@@ -27,6 +28,7 @@ public class CarrosMapper {
         carrosDTO.setPersonagem(carrosModel.getPersonagem());
         carrosDTO.setCambio(carrosModel.getCambio());
         carrosDTO.setCor(carrosModel.getCor());
+        carrosDTO.setFoto((carrosModel.getFoto()));
         return carrosDTO;
     }
 

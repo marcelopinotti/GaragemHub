@@ -13,6 +13,7 @@ public class PersonagemMapper {
         personagemDTO.setIdade(personagemModel.getIdade());
         personagemDTO.setGenero(personagemModel.getGenero());
         personagemDTO.setCarros(personagemModel.getCarros());
+        personagemDTO.setFoto((personagemModel.getFoto()));
         return personagemDTO;
     };
     public PersonagemModel map(PersonagemDTO personagemDTO){
@@ -23,6 +24,7 @@ public class PersonagemMapper {
         personagemModel.setIdade(personagemDTO.getIdade());
         personagemModel.setGenero(personagemDTO.getGenero());
         personagemModel.setCarros(personagemDTO.getCarros());
+        personagemModel.setFoto((personagemDTO.getFoto()));
         return personagemModel;
     };
 }

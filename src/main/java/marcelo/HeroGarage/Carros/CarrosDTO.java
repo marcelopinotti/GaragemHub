@@ -19,4 +19,5 @@ public class CarrosDTO {
     private PersonagemModel personagem;
     private String cambio;
     private String cor;
+    private String foto;
 }
