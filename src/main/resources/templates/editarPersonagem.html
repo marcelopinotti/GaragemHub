@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Editar personagem</title>
+
+    <link rel="stylesheet" th:href="@{/css/listarPersonagem.css}">
+    <style>
+        .form {
+            padding: 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 12px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        input, select {
+            height: 42px;
+            padding: 0 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.92);
+            outline: none;
+        }
+
+        input::placeholder { color: rgba(255, 255, 255, 0.45); }
+
+        .full { grid-column: 1 / -1; }
+
+        .preview {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.10);
+        }
+
+        @media (max-width: 860px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="page" id="page">
+    <div class="mouse-glow" aria-hidden="true"></div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Editar personagem</h1>
+                <p th:text="${personagem != null ? personagem.nome : 'Personagem'}">Personagem</p>
+            </div>
+
+            <div class="actions">
+                <a class="btn btn-muted" th:href="@{/personagens/ui/listar}">Voltar</a>
+                <a class="btn btn-primary" th:if="${personagem != null and personagem.id != null}" th:href="@{/personagens/ui/listar/{id}(id=${personagem.id})}">Ver detalhes</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <form class="form" th:if="${personagem != null}" th:action="@{/personagens/ui/editar/{id}(id=${personagem.id})}" th:object="${personagem}" method="post">
+                <div class="grid">
+                    <div class="field">
+                        <label for="p-id">ID</label>
+                        <input id="p-id" type="text" th:value="*{id}" disabled>
+                    </div>
+
+                    <div class="field">
+                        <label for="p-nome">Nome</label>
+                        <input id="p-nome" type="text" th:field="*{nome}" placeholder="Nome do personagem">
+                    </div>
+
+                    <div class="field">
+                        <label for="p-desenho">Desenho</label>
+                        <input id="p-desenho" type="text" th:field="*{desenho}" placeholder="DC / Marvel">
+                    </div>
+
+                    <div class="field">
+                        <label for="p-idade">Idade</label>
+                        <input id="p-idade" type="number" th:field="*{idade}" placeholder="Ex: 30" min="1">
+                    </div>
+
+                    <div class="field">
+                        <label for="p-genero">Gênero</label>
+                        <input id="p-genero" type="text" th:field="*{genero}" placeholder="M/F">
+                    </div>
+
+                    <div class="field full">
+                        <label for="p-foto">Foto (URL)</label>
+                        <input id="p-foto" type="text" th:field="*{foto}" placeholder="https://...">
+                    </div>
+
+                    <div class="actions full" style="margin-top:8px">
+                        <button class="btn btn-primary" type="submit">Salvar alterações</button>
+                        <a class="btn btn-danger" th:href="@{/personagens/ui/deletar/{id}(id=${personagem.id})}">Deletar</a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="form" th:if="${personagem == null}">
+                <span class="badge">Personagem não encontrado.</span>
+            </div>
+
+            <div class="preview" th:if="${personagem != null}">
+                <img class="avatar" style="width:96px;height:96px" th:src="${personagem.foto}" alt="Foto do personagem">
+                <div>
+                    <div class="badge" th:text="'ID: ' + ${personagem.id}">ID</div>
+                    <div style="margin-top:10px; color: rgba(255, 255, 255, 0.80)">Pré-visualização</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const root = document.documentElement;
+        const page = document.getElementById('page');
+        if (!page) return;
+
+        const set = (x, y) => {
+            root.style.setProperty('--mx-px', x + 'px');
+            root.style.setProperty('--my-px', y + 'px');
+        };
+
+        set(window.innerWidth * 0.5, window.innerHeight * 0.3);
+        window.addEventListener('mousemove', (e) => set(e.clientX, e.clientY), { passive: true });
+    })();
+</script>
+</body>
+</html>

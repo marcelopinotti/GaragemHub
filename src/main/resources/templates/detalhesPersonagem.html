@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Detalhes do personagem</title>
+
+    <link rel="stylesheet" th:href="@{/css/listarPersonagem.css}">
+</head>
+<body>
+<div class="page" id="page">
+    <div class="mouse-glow" aria-hidden="true"></div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Detalhes do personagem</h1>
+                <p th:if="${personagem != null}" th:text="${personagem.nome}">Nome do personagem</p>
+            </div>
+
+            <div class="actions">
+                <a class="btn btn-muted" th:href="@{/personagens/ui/listar}">Voltar</a>
+                <a class="btn btn-danger" th:if="${personagem != null and personagem.id != null}" th:href="@{/personagens/ui/deletar/{id}(id=${personagem.id})}">Deletar</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-wrap">
+                <table class="table" style="min-width: 0">
+                    <thead>
+                    <tr>
+                        <th>Campo</th>
+                        <th>Valor</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>ID</td>
+                        <td th:text="${personagem.id}">1</td>
+                    </tr>
+                    <tr>
+                        <td>Foto</td>
+                        <td>
+                            <img class="avatar" style="width:120px;height:120px" th:src="${personagem.foto}" alt="Foto do personagem"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Nome</td>
+                        <td th:text="${personagem.nome}">Batman</td>
+                    </tr>
+                    <tr>
+                        <td>Desenho</td>
+                        <td><span class="badge" th:text="${personagem.desenho}">DC</span></td>
+                    </tr>
+                    <tr>
+                        <td>Idade</td>
+                        <td th:text="${personagem.idade}">30</td>
+                    </tr>
+                    <tr>
+                        <td>Gênero</td>
+                        <td th:text="${personagem.genero}">M</td>
+                    </tr>
+                    <tr>
+                        <td>Carros</td>
+                        <td>
+                            <span class="badge" th:if="${personagem.carros == null or #lists.isEmpty(personagem.carros)}">Sem carros</span>
+
+                            <div th:if="${personagem.carros != null and !#lists.isEmpty(personagem.carros)}" class="actions">
+                                <div th:each="carro : ${personagem.carros}">
+                                    <img class="avatar" style="width:96px;height:96px" th:if="${carro != null and carro.foto != null}" th:src="${carro.foto}" alt="Foto do carro"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${personagem == null}">
+                        <td colspan="2">
+                            <span class="badge">Personagem não encontrado.</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const root = document.documentElement;
+        const page = document.getElementById('page');
+        if (!page) return;
+
+        const set = (x, y) => {
+            root.style.setProperty('--mx-px', x + 'px');
+            root.style.setProperty('--my-px', y + 'px');
+        };
+
+        set(window.innerWidth * 0.5, window.innerHeight * 0.3);
+
+        window.addEventListener('mousemove', (e) => set(e.clientX, e.clientY), { passive: true });
+    })();
+</script>
+</body>
+</html>

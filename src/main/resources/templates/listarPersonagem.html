@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Tabela de Personagens</title>
+
+    <link rel="stylesheet" th:href="@{/css/listarPersonagem.css}">
+</head>
+<body>
+<div class="page" id="page">
+    <div class="mouse-glow" aria-hidden="true"></div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Lista de Personagens</h1>
+
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Foto</th>
+                        <th>Nome</th>
+                        <th>Desenho</th>
+                        <th>Idade</th>
+                        <th>Gênero</th>
+                        <th>Carros (fotos)</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="personagem : ${personagens}">
+                        <td th:text="${personagem.id}">Id</td>
+                        <td>
+                            <img class="avatar" th:src="${personagem.foto}" alt="Foto do personagem"/>
+                        </td>
+                        <td th:text="${personagem.nome}">Nome</td>
+                        <td>
+                            <span class="badge" th:text="${personagem.desenho}">Desenho</span>
+                        </td>
+                        <td th:text="${personagem.idade}">Idade</td>
+                        <td th:text="${personagem.genero}">Gênero</td>
+                        <td>
+                            <span class="badge" th:if="${personagem.carros == null or #lists.isEmpty(personagem.carros)}">Não tem carro.</span>
+                            <div th:if="${personagem.carros != null and !#lists.isEmpty(personagem.carros)}" th:each="carro : ${personagem.carros}">
+                                <img class="avatar" style="width:72px;height:72px" th:if="${carro != null and carro.foto != null}" th:src="${carro.foto}" alt="Foto do carro"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <a class="btn btn-muted" th:href="@{/personagens/ui/editar/{id}(id=${personagem.id})}">Editar</a>
+                                <a class="btn btn-primary" th:href="@{/personagens/ui/listar/{id}(id=${personagem.id})}">Ver Detalhes</a>
+                                <a class="btn btn-danger" th:href="@{/personagens/ui/deletar/{id}(id=${personagem.id})}">Deletar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const root = document.documentElement;
+        const page = document.getElementById('page');
+        if (!page) return;
+
+        const set = (x, y) => {
+            root.style.setProperty('--mx-px', x + 'px');
+            root.style.setProperty('--my-px', y + 'px');
+        };
+
+        // Inicia no centro da viewport
+        set(window.innerWidth * 0.5, window.innerHeight * 0.3);
+
+        window.addEventListener('mousemove', (e) => set(e.clientX, e.clientY), { passive: true });
+    })();
+</script>
+</body>
+</html>
