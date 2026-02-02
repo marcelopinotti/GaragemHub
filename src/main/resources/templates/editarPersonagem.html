@@ -131,20 +131,7 @@
     </div>
 </div>
 
-<script>
-    (function () {
-        const root = document.documentElement;
-        const page = document.getElementById('page');
-        if (!page) return;
+<script th:src="@{/js/script.js}"></script>
 
-        const set = (x, y) => {
-            root.style.setProperty('--mx-px', x + 'px');
-            root.style.setProperty('--my-px', y + 'px');
-        };
-
-        set(window.innerWidth * 0.5, window.innerHeight * 0.3);
-        window.addEventListener('mousemove', (e) => set(e.clientX, e.clientY), { passive: true });
-    })();
-</script>
 </body>
 </html>
