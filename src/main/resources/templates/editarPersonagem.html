@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Editar personagem</title>
 
-    <link rel="stylesheet" th:href="@{/css/listarPersonagem.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
         .form {
             padding: 18px;
@@ -40,6 +40,21 @@
             background: rgba(255, 255, 255, 0.08);
             color: rgba(255, 255, 255, 0.92);
             outline: none;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            border-color: rgba(124, 58, 237, 0.60);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: var(--bg);
+            color: var(--text);
         }
 
         input::placeholder { color: rgba(255, 255, 255, 0.45); }

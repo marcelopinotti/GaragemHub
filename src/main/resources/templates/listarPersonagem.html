@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Tabela de Personagens</title>
 
-    <link rel="stylesheet" th:href="@{/css/listarPersonagem.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 <div class="page" id="page">
@@ -17,7 +17,9 @@
         <div class="header">
             <div>
                 <h1>Lista de Personagens</h1>
-
+            </div>
+            <div>
+                <a th:href="@{/personagens/ui/adicionar}" class="btn btn-primary">Adicionar Personagem</a>
             </div>
         </div>
 
