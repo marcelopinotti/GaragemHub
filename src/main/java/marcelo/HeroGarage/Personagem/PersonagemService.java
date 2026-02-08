@@ -55,6 +55,7 @@ public class PersonagemService {
         atribuirSeNaoNulo(personagemDTO.getNome(), personagemExistente::setNome);
         atribuirSeNaoNulo(personagemDTO.getDesenho(), personagemExistente::setDesenho);
         atribuirSeNaoNulo(personagemDTO.getGenero(), personagemExistente::setGenero);
+        atribuirSeNaoNulo(personagemDTO.getFoto(), personagemExistente::setFoto);
         validarEAplicarIdade(personagemDTO.getIdade(), personagemExistente);
         atualizarCarrosRelacionados(personagemDTO.getCarros(), personagemExistente);
 
