@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Adicionar Personagem</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="page" id="page">
+    <div class="mouse-glow" aria-hidden="true"></div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Adicionar Personagem</h1>
+                <p>Preencha os dados do novo personagem</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="padding: 32px;">
+                <form th:action="@{/personagens/ui/salvar}" th:object="${personagem}" method="post">
+                    <div style="display: grid; gap: 24px; max-width: 600px;">
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Nome</label>
+                            <input type="text" th:field="*{nome}" required
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Desenho</label>
+                            <input type="text" th:field="*{desenho}" required
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Idade</label>
+                            <input type="number" th:field="*{idade}" required
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Gênero</label>
+                            <select th:field="*{genero}" required
+                                    style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px; cursor: pointer;">
+                                <option value="" style="background: var(--bg); color: var(--text);">Selecione...</option>
+                                <option value="MASCULINO" style="background: var(--bg); color: var(--text);">Masculino</option>
+                                <option value="FEMININO" style="background: var(--bg); color: var(--text);">Feminino</option>
+                                <option value="OUTRO" style="background: var(--bg); color: var(--text);">Outro</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">URL da Foto</label>
+                            <input type="url" th:field="*{foto}"
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn btn-primary">Salvar Personagem</button>
+                            <a th:href="@{/personagens/ui/listar}" class="btn btn-muted">Cancelar</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/script.js}" defer></script>
+
+</body>
+</html>
