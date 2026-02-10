@@ -18,6 +18,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,24 +48,33 @@ class PersonagemServiceTest {
                 .desenho("DC")
                 .idade(35)
                 .genero("Masculino")
+                .foto("https://example.com/batman.png")
                 .carros(new ArrayList<>())
                 .build();
 
-        personagemDTO = new PersonagemDTO(1L, "Batman", "DC", 35, "Masculino", new ArrayList<>());
+        personagemDTO = new PersonagemDTO();
+        personagemDTO.setId(1L);
+        personagemDTO.setNome("Batman");
+        personagemDTO.setDesenho("DC");
+        personagemDTO.setIdade(35);
+        personagemDTO.setGenero("Masculino");
+        personagemDTO.setFoto("https://example.com/batman.png");
+        personagemDTO.setCarros(new ArrayList<>());
+        personagemDTO.setCarrosId(new ArrayList<>());
     }
 
     @Test
     @DisplayName("Deve criar um personagem com sucesso")
     void deveCriarPersonagem() {
-        when(personagemMapper.map(personagemDTO)).thenReturn(personagemModel);
-        when(personagemRepository.save(personagemModel)).thenReturn(personagemModel);
-        when(personagemMapper.map(personagemModel)).thenReturn(personagemDTO);
+        when(personagemMapper.map(any(PersonagemDTO.class))).thenReturn(personagemModel);
+        when(personagemRepository.save(any(PersonagemModel.class))).thenReturn(personagemModel);
+        when(personagemMapper.map(any(PersonagemModel.class))).thenReturn(personagemDTO);
 
         PersonagemDTO result = personagemService.criar(personagemDTO);
 
         assertNotNull(result);
         assertEquals(personagemDTO.getNome(), result.getNome());
-        verify(personagemRepository).save(personagemModel);
+        verify(personagemRepository).save(any(PersonagemModel.class));
     }
 
     @Test
@@ -100,7 +111,7 @@ class PersonagemServiceTest {
     @DisplayName("Deve buscar personagem por ID com sucesso")
     void deveBuscarPorId() {
         when(personagemRepository.findById(1L)).thenReturn(Optional.of(personagemModel));
-        when(personagemMapper.map(personagemModel)).thenReturn(personagemDTO);
+        when(personagemMapper.map(any(PersonagemModel.class))).thenReturn(personagemDTO);
 
         PersonagemDTO result = personagemService.buscarPorId(1L);
 
@@ -109,7 +120,7 @@ class PersonagemServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao buscar ID inexistente")
+    @DisplayName("Deve lancar excecao ao buscar ID inexistente")
     void deveLancarExcecaoAoBuscarIdInexistente() {
         when(personagemRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -119,32 +130,27 @@ class PersonagemServiceTest {
     @Test
     @DisplayName("Deve atualizar personagem com sucesso")
     void deveAtualizarPersonagem() {
-        // 1. Preparamos os dados de entrada (o que queremos atualizar)
-        PersonagemDTO dadosParaAtualizar = new PersonagemDTO(1L, "Bruce Wayne", "DC", 36, "Masculino", new ArrayList<>());
-        
-        // 2. Configuramos os Mocks (simulamos o comportamento das dependências)
-        // Quando procurar pelo ID 1, retorna o personagem que já existe
+        PersonagemDTO dadosParaAtualizar = new PersonagemDTO();
+        dadosParaAtualizar.setId(1L);
+        dadosParaAtualizar.setNome("Bruce Wayne");
+        dadosParaAtualizar.setDesenho("DC");
+        dadosParaAtualizar.setIdade(36);
+        dadosParaAtualizar.setGenero("Masculino");
+        dadosParaAtualizar.setCarrosId(new ArrayList<>());
+
         when(personagemRepository.findById(1L)).thenReturn(Optional.of(personagemModel));
-        
-        // Quando salvar qualquer personagem, retorna o modelo (simulação simples)
         when(personagemRepository.save(any(PersonagemModel.class))).thenReturn(personagemModel);
-        
-        // Quando converter o modelo para DTO, retorna os dados atualizados
         when(personagemMapper.map(any(PersonagemModel.class))).thenReturn(dadosParaAtualizar);
 
-        // 3. Executamos o método que queremos testar
         PersonagemDTO resultado = personagemService.atualizar(dadosParaAtualizar, 1L);
 
-        // 4. Verificamos se deu tudo certo (Asserções)
         assertNotNull(resultado);
         assertEquals("Bruce Wayne", resultado.getNome());
-        
-        // Verifica se o repositório tentou salvar as alterações
         verify(personagemRepository).save(any(PersonagemModel.class));
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao atualizar com idade inválida")
+    @DisplayName("Deve lancar excecao ao atualizar com idade invalida")
     void deveLancarExcecaoIdadeInvalida() {
         PersonagemDTO updateDTO = new PersonagemDTO();
         updateDTO.setIdade(-1);
@@ -165,7 +171,7 @@ class PersonagemServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao deletar ID inexistente")
+    @DisplayName("Deve lancar excecao ao deletar ID inexistente")
     void deveLancarExcecaoAoDeletarIdInexistente() {
         when(personagemRepository.existsById(1L)).thenReturn(false);
 
@@ -174,21 +180,37 @@ class PersonagemServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atualizar carros relacionados")
+    @DisplayName("Deve atualizar carros relacionados com sucesso")
     void deveAtualizarCarrosRelacionados() {
         CarrosModel carro = CarrosModel.builder().id(10L).nome("Batmobile").build();
+
         PersonagemDTO updateDTO = new PersonagemDTO();
-        updateDTO.setCarros(List.of(carro));
+        updateDTO.setCarrosId(List.of(10L));
 
         when(personagemRepository.findById(1L)).thenReturn(Optional.of(personagemModel));
-        when(carrosRepository.findAllById(anyList())).thenReturn(List.of(carro));
+        when(carrosRepository.findAllById(List.of(10L))).thenReturn(List.of(carro));
         when(personagemRepository.save(any(PersonagemModel.class))).thenReturn(personagemModel);
         when(personagemMapper.map(any(PersonagemModel.class))).thenReturn(personagemDTO);
 
         personagemService.atualizar(updateDTO, 1L);
 
-        verify(carrosRepository).findAllById(anyList());
+        verify(carrosRepository).findAllById(List.of(10L));
         assertEquals(1, personagemModel.getCarros().size());
         assertEquals(personagemModel, carro.getPersonagem());
+    }
+
+    @Test
+    @DisplayName("Deve lancar excecao ao tentar atribuir carro que ja tem outro dono")
+    void deveLancarExcecaoCarroComOutroDono() {
+        PersonagemModel outroDono = PersonagemModel.builder().id(99L).nome("Outro").build();
+        CarrosModel carroComDono = CarrosModel.builder().id(10L).nome("Batmobile").personagem(outroDono).build();
+
+        PersonagemDTO updateDTO = new PersonagemDTO();
+        updateDTO.setCarrosId(List.of(10L));
+
+        when(personagemRepository.findById(1L)).thenReturn(Optional.of(personagemModel));
+        when(carrosRepository.findAllById(List.of(10L))).thenReturn(List.of(carroComDono));
+
+        assertThrows(IllegalArgumentException.class, () -> personagemService.atualizar(updateDTO, 1L));
     }
 }

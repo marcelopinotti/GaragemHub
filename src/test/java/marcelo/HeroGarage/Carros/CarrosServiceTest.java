@@ -1,7 +1,10 @@
 package marcelo.HeroGarage.Carros;
 
+import marcelo.HeroGarage.Personagem.PersonagemModel;
+import marcelo.HeroGarage.Personagem.PersonagemRepository;
 import marcelo.HeroGarage.exception.CarroNotFoundException;
 import marcelo.HeroGarage.exception.IllegalArgumentException;
+import marcelo.HeroGarage.exception.PersonagemNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +30,9 @@ class CarrosServiceTest {
 
     @Mock
     private CarrosMapper carrosMapper;
+
+    @Mock
+    private PersonagemRepository personagemRepository;
 
     @InjectMocks
     private CarrosService carrosService;
@@ -41,24 +49,58 @@ class CarrosServiceTest {
                 .modelo("Tumbler")
                 .ano(2022)
                 .cor("Preto")
-                .cambio("Automático")
+                .cambio("Automatico")
+                .foto("https://example.com/batmobile.png")
                 .build();
 
-        carroDTO = new CarrosDTO(1L, "Batmobile", "Wayne Tech", "Tumbler", 2022, null, "Automático", "Preto");
+        carroDTO = new CarrosDTO();
+        carroDTO.setId(1L);
+        carroDTO.setNome("Batmobile");
+        carroDTO.setMarca("Wayne Tech");
+        carroDTO.setModelo("Tumbler");
+        carroDTO.setAno(2022);
+        carroDTO.setCor("Preto");
+        carroDTO.setCambio("Automatico");
+        carroDTO.setFoto("https://example.com/batmobile.png");
+        carroDTO.setPersonagemId(null);
     }
 
     @Test
     @DisplayName("Deve criar um carro com sucesso")
     void deveCriarCarro() {
-        when(carrosMapper.map(carroDTO)).thenReturn(carroModel);
-        when(carrosRepository.save(carroModel)).thenReturn(carroModel);
-        when(carrosMapper.map(carroModel)).thenReturn(carroDTO);
+        when(carrosMapper.map(any(CarrosDTO.class))).thenReturn(carroModel);
+        when(carrosRepository.save(any(CarrosModel.class))).thenReturn(carroModel);
+        when(carrosMapper.map(any(CarrosModel.class))).thenReturn(carroDTO);
 
         CarrosDTO result = carrosService.criar(carroDTO);
 
         assertNotNull(result);
         assertEquals(carroDTO.getNome(), result.getNome());
-        verify(carrosRepository).save(carroModel);
+        verify(carrosRepository).save(any(CarrosModel.class));
+    }
+
+    @Test
+    @DisplayName("Deve criar um carro com personagem associado")
+    void deveCriarCarroComPersonagem() {
+        PersonagemModel personagem = PersonagemModel.builder().id(1L).nome("Batman").desenho("DC").build();
+
+        CarrosDTO dtoComPersonagem = new CarrosDTO();
+        dtoComPersonagem.setNome("Batmobile");
+        dtoComPersonagem.setMarca("Wayne Tech");
+        dtoComPersonagem.setModelo("Tumbler");
+        dtoComPersonagem.setAno(2022);
+        dtoComPersonagem.setPersonagemId(1L);
+
+        when(carrosMapper.map(any(CarrosDTO.class))).thenReturn(carroModel);
+        when(personagemRepository.findById(1L)).thenReturn(Optional.of(personagem));
+        when(carrosRepository.save(any(CarrosModel.class))).thenReturn(carroModel);
+        when(carrosMapper.map(any(CarrosModel.class))).thenReturn(dtoComPersonagem);
+
+        CarrosDTO result = carrosService.criar(dtoComPersonagem);
+
+        assertNotNull(result);
+        verify(personagemRepository).findById(1L);
+        verify(carrosRepository).save(any(CarrosModel.class));
     }
 
     @Test
@@ -95,7 +137,7 @@ class CarrosServiceTest {
     @DisplayName("Deve buscar carro por ID com sucesso")
     void deveBuscarPorId() {
         when(carrosRepository.findById(1L)).thenReturn(Optional.of(carroModel));
-        when(carrosMapper.map(carroModel)).thenReturn(carroDTO);
+        when(carrosMapper.map(any(CarrosModel.class))).thenReturn(carroDTO);
 
         CarrosDTO result = carrosService.buscarPorId(1L);
 
@@ -104,7 +146,7 @@ class CarrosServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao buscar ID inexistente")
+    @DisplayName("Deve lancar excecao ao buscar ID inexistente")
     void deveLancarExcecaoAoBuscarIdInexistente() {
         when(carrosRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -114,18 +156,21 @@ class CarrosServiceTest {
     @Test
     @DisplayName("Deve atualizar carro com sucesso")
     void deveAtualizarCarro() {
-        // 1. Dados que queremos atualizar
-        CarrosDTO dadosParaAtualizar = new CarrosDTO(1L, "Novo Batmobile", "Wayne Tech", "Tumbler", 2023, null, "Automático", "Preto");
+        CarrosDTO dadosParaAtualizar = new CarrosDTO();
+        dadosParaAtualizar.setId(1L);
+        dadosParaAtualizar.setNome("Novo Batmobile");
+        dadosParaAtualizar.setMarca("Wayne Tech");
+        dadosParaAtualizar.setModelo("Tumbler V2");
+        dadosParaAtualizar.setAno(2023);
+        dadosParaAtualizar.setCor("Preto");
+        dadosParaAtualizar.setCambio("Automatico");
 
-        // 2. Mocks (simulações)
         when(carrosRepository.findById(1L)).thenReturn(Optional.of(carroModel));
         when(carrosRepository.save(any(CarrosModel.class))).thenReturn(carroModel);
         when(carrosMapper.map(any(CarrosModel.class))).thenReturn(dadosParaAtualizar);
 
-        // 3. Execução
         CarrosDTO resultado = carrosService.atualizar(dadosParaAtualizar, 1L);
 
-        // 4. Verificações
         assertNotNull(resultado);
         assertEquals("Novo Batmobile", resultado.getNome());
         assertEquals(2023, resultado.getAno());
@@ -133,7 +178,58 @@ class CarrosServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao atualizar com ano inválido")
+    @DisplayName("Deve atualizar carro atribuindo personagem")
+    void deveAtualizarCarroComPersonagem() {
+        PersonagemModel personagem = PersonagemModel.builder().id(1L).nome("Batman").desenho("DC").build();
+
+        CarrosDTO dadosParaAtualizar = new CarrosDTO();
+        dadosParaAtualizar.setNome("Batmobile");
+        dadosParaAtualizar.setPersonagemId(1L);
+
+        when(carrosRepository.findById(1L)).thenReturn(Optional.of(carroModel));
+        when(personagemRepository.findById(1L)).thenReturn(Optional.of(personagem));
+        when(carrosRepository.save(any(CarrosModel.class))).thenReturn(carroModel);
+        when(carrosMapper.map(any(CarrosModel.class))).thenReturn(dadosParaAtualizar);
+
+        CarrosDTO resultado = carrosService.atualizar(dadosParaAtualizar, 1L);
+
+        assertNotNull(resultado);
+        verify(personagemRepository).findById(1L);
+        assertEquals(personagem, carroModel.getPersonagem());
+    }
+
+    @Test
+    @DisplayName("Deve remover personagem do carro ao passar personagemId = 0")
+    void deveRemoverPersonagemDoCarro() {
+        PersonagemModel personagem = PersonagemModel.builder().id(1L).nome("Batman").build();
+        carroModel.setPersonagem(personagem);
+
+        CarrosDTO dadosParaAtualizar = new CarrosDTO();
+        dadosParaAtualizar.setPersonagemId(0L);
+
+        when(carrosRepository.findById(1L)).thenReturn(Optional.of(carroModel));
+        when(carrosRepository.save(any(CarrosModel.class))).thenReturn(carroModel);
+        when(carrosMapper.map(any(CarrosModel.class))).thenReturn(dadosParaAtualizar);
+
+        carrosService.atualizar(dadosParaAtualizar, 1L);
+
+        assertNull(carroModel.getPersonagem());
+    }
+
+    @Test
+    @DisplayName("Deve lancar excecao ao atualizar com personagemId inexistente")
+    void deveLancarExcecaoPersonagemInexistente() {
+        CarrosDTO dadosParaAtualizar = new CarrosDTO();
+        dadosParaAtualizar.setPersonagemId(999L);
+
+        when(carrosRepository.findById(1L)).thenReturn(Optional.of(carroModel));
+        when(personagemRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(PersonagemNotFoundException.class, () -> carrosService.atualizar(dadosParaAtualizar, 1L));
+    }
+
+    @Test
+    @DisplayName("Deve lancar excecao ao atualizar com ano invalido")
     void deveLancarExcecaoAnoInvalido() {
         CarrosDTO updateDTO = new CarrosDTO();
         updateDTO.setAno(-1);
@@ -154,7 +250,7 @@ class CarrosServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao deletar ID inexistente")
+    @DisplayName("Deve lancar excecao ao deletar ID inexistente")
     void deveLancarExcecaoAoDeletarIdInexistente() {
         when(carrosRepository.existsById(1L)).thenReturn(false);
 
