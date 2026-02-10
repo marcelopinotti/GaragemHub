@@ -71,10 +71,11 @@
                         <div>
                             <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Personagem (opcional)</label>
                             <select th:field="*{personagemId}"
-                                    style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px; cursor: pointer;">
-                                <option value="0" style="background: var(--bg); color: var(--text);">Sem dono</option>
+                                    style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: rgba(30, 30, 40, 0.95); color: var(--text); font-size: 15px; cursor: pointer;">
+                                <option value="0" style="background: #1e1e28; color: #fff;">Sem dono</option>
                                 <option th:each="personagem : ${personagensDisponiveis}" th:value="${personagem.id}"
-                                        th:text="${personagem.nome + ' • ' + personagem.desenho}">
+                                        th:text="${personagem.nome + ' • ' + personagem.desenho}"
+                                        style="background: #1e1e28; color: #fff; padding: 8px;">
                                     Personagem
                                 </option>
                             </select>

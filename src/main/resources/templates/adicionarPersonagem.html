@@ -63,11 +63,12 @@
 
                         <div>
                             <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Carros (opcional)</label>
-                            <select multiple th:field="*{carrosIds}"
-                                    style="width: 100%; min-height: 120px; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
-                                <option th:if="${carrosDisponiveis == null or #lists.isEmpty(carrosDisponiveis)}" disabled>Sem carros disponíveis</option>
+                            <select multiple th:field="*{carrosId}"
+                                    style="width: 100%; min-height: 120px; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: rgba(30, 30, 40, 0.95); color: var(--text); font-size: 15px;">
+                                <option th:if="${carrosDisponiveis == null or #lists.isEmpty(carrosDisponiveis)}" disabled style="background: #1e1e28; color: #fff;">Sem carros disponíveis</option>
                                 <option th:each="carro : ${carrosDisponiveis}" th:value="${carro.id}"
-                                        th:text="${carro.nome + ' • ' + carro.marca}">
+                                        th:text="${carro.nome + ' • ' + carro.marca}"
+                                        style="background: #1e1e28; color: #fff; padding: 8px;">
                                     Carro
                                 </option>
                             </select>

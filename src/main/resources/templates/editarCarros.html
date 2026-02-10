@@ -127,10 +127,11 @@
 
                     <div class="field full">
                         <label>Personagem (opcional)</label>
-                        <select th:field="*{personagemId}" style="height: 42px;">
-                            <option value="0">Sem dono</option>
+                        <select th:field="*{personagemId}" style="height: 42px; background: rgba(30, 30, 40, 0.95);">
+                            <option value="0" style="background: #1e1e28; color: #fff;">Sem dono</option>
                             <option th:each="personagem : ${personagensDisponiveis}" th:value="${personagem.id}"
-                                    th:text="${personagem.nome + ' • ' + personagem.desenho}">
+                                    th:text="${personagem.nome + ' • ' + personagem.desenho}"
+                                    style="background: #1e1e28; color: #fff; padding: 8px;">
                                 Personagem
                             </option>
                         </select>
