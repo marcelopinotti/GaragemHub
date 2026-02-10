@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Detalhes do carro</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="page" id="page">
+    <div class="mouse-glow" aria-hidden="true"></div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Detalhes do carro</h1>
+                <p th:if="${carros != null}" th:text="${carros.nome}">Nome do carro</p>
+            </div>
+
+            <div class="actions">
+                <a class="btn btn-muted" th:href="@{/carros/ui/listar}">Voltar</a>
+                <a class="btn btn-primary" th:if="${carros != null and carros.id != null}" th:href="@{/carros/ui/editar/{id}(id=${carros.id})}">Editar</a>
+                <a class="btn btn-danger" th:if="${carros != null and carros.id != null}" th:href="@{/carros/ui/deletar/{id}(id=${carros.id})}">Deletar</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-wrap">
+                <table class="table" style="min-width: 0">
+                    <thead>
+                    <tr>
+                        <th>Campo</th>
+                        <th>Valor</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>ID</td>
+                        <td th:text="${carros.id}">1</td>
+                    </tr>
+                    <tr>
+                        <td>Foto</td>
+                        <td>
+                            <img class="avatar" style="width:120px;height:120px" th:src="${carros.foto}" alt="Foto do carro"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Nome</td>
+                        <td th:text="${carros.nome}">Batmobile</td>
+                    </tr>
+                    <tr>
+                        <td>Marca</td>
+                        <td><span class="badge" th:text="${carros.marca}">Marca</span></td>
+                    </tr>
+                    <tr>
+                        <td>Modelo</td>
+                        <td th:text="${carros.modelo}">Modelo</td>
+                    </tr>
+                    <tr>
+                        <td>Ano</td>
+                        <td th:text="${carros.ano}">2022</td>
+                    </tr>
+                    <tr>
+                        <td>Câmbio</td>
+                        <td th:text="${carros.cambio}">Automático</td>
+                    </tr>
+                    <tr>
+                        <td>Cor</td>
+                        <td th:text="${carros.cor}">Preto</td>
+                    </tr>
+                    <tr>
+                        <td>Personagem</td>
+                        <td>
+                            <span class="badge" th:if="${carros.personagem == null}">Sem dono</span>
+                            <div th:if="${carros.personagem != null}" class="actions">
+                                <img class="avatar" style="width:72px;height:72px" th:if="${carros.personagem.foto != null}" th:src="${carros.personagem.foto}" alt="Foto do personagem"/>
+                                <span th:text="${carros.personagem.nome}">Nome do personagem</span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${carros == null}">
+                        <td colspan="2">
+                            <span class="badge">Carro não encontrado.</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/script.js}" defer></script>
+
+</body>
+</html>
+

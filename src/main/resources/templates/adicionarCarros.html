@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Adicionar Carro</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="page" id="page">
+    <div class="mouse-glow" aria-hidden="true"></div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Adicionar Carro</h1>
+                <p>Preencha os dados do novo carro</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="padding: 32px;">
+                <form th:action="@{/carros/ui/salvar}" th:object="${carros}" method="post">
+                    <div style="display: grid; gap: 24px; max-width: 600px;">
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Nome</label>
+                            <input type="text" th:field="*{nome}" required
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Marca</label>
+                            <input type="text" th:field="*{marca}" required
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Modelo</label>
+                            <input type="text" th:field="*{modelo}" required
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Ano</label>
+                            <input type="number" th:field="*{ano}" required
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Câmbio</label>
+                            <input type="text" th:field="*{cambio}" required
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Cor</label>
+                            <input type="text" th:field="*{cor}" required
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">URL da Foto</label>
+                            <input type="url" th:field="*{foto}"
+                                   style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Personagem (opcional)</label>
+                            <select th:field="*{personagemId}"
+                                    style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px; cursor: pointer;">
+                                <option value="0" style="background: var(--bg); color: var(--text);">Sem dono</option>
+                                <option th:each="personagem : ${personagensDisponiveis}" th:value="${personagem.id}"
+                                        th:text="${personagem.nome + ' • ' + personagem.desenho}">
+                                    Personagem
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn btn-primary">Salvar Carro</button>
+                            <a th:href="@{/carros/ui/listar}" class="btn btn-muted">Cancelar</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/script.js}" defer></script>
+
+</body>
+</html>

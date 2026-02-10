@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Editar carro</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .form {
+            padding: 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 12px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        input, select {
+            height: 42px;
+            padding: 0 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.92);
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            border-color: rgba(124, 58, 237, 0.60);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        input::placeholder { color: rgba(255, 255, 255, 0.45); }
+
+        .full { grid-column: 1 / -1; }
+
+        .preview {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.10);
+        }
+
+        @media (max-width: 860px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="page" id="page">
+    <div class="mouse-glow" aria-hidden="true"></div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Editar carro</h1>
+                <p th:text="${carros != null ? carros.nome : 'Carro'}">Carro</p>
+            </div>
+
+            <div class="actions">
+                <a class="btn btn-muted" th:href="@{/carros/ui/listar}">Voltar</a>
+                <a class="btn btn-primary" th:if="${carros != null and carros.id != null}" th:href="@{/carros/ui/listar/{id}(id=${carros.id})}">Ver detalhes</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <form class="form" th:if="${carros != null}" th:action="@{/carros/ui/editar/{id}(id=${carros.id})}" th:object="${carros}" method="post">
+                <div class="grid">
+                    <div class="field">
+                        <label for="c-id">ID</label>
+                        <input id="c-id" type="text" th:value="*{id}" disabled>
+                    </div>
+
+                    <div class="field">
+                        <label for="c-nome">Nome</label>
+                        <input id="c-nome" type="text" th:field="*{nome}" placeholder="Nome do carro">
+                    </div>
+
+                    <div class="field">
+                        <label for="c-marca">Marca</label>
+                        <input id="c-marca" type="text" th:field="*{marca}" placeholder="Marca">
+                    </div>
+
+                    <div class="field">
+                        <label for="c-modelo">Modelo</label>
+                        <input id="c-modelo" type="text" th:field="*{modelo}" placeholder="Modelo">
+                    </div>
+
+                    <div class="field">
+                        <label for="c-ano">Ano</label>
+                        <input id="c-ano" type="number" th:field="*{ano}" placeholder="Ex: 2022" min="1">
+                    </div>
+
+                    <div class="field">
+                        <label for="c-cambio">Câmbio</label>
+                        <input id="c-cambio" type="text" th:field="*{cambio}" placeholder="Manual / Automático">
+                    </div>
+
+                    <div class="field">
+                        <label for="c-cor">Cor</label>
+                        <input id="c-cor" type="text" th:field="*{cor}" placeholder="Cor">
+                    </div>
+
+                    <div class="field full">
+                        <label for="c-foto">Foto (URL)</label>
+                        <input id="c-foto" type="text" th:field="*{foto}" placeholder="https://...">
+                    </div>
+
+                    <div class="field full">
+                        <label>Personagem (opcional)</label>
+                        <select th:field="*{personagemId}" style="height: 42px;">
+                            <option value="0">Sem dono</option>
+                            <option th:each="personagem : ${personagensDisponiveis}" th:value="${personagem.id}"
+                                    th:text="${personagem.nome + ' • ' + personagem.desenho}">
+                                Personagem
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="actions full" style="margin-top:8px">
+                        <button class="btn btn-primary" type="submit">Salvar alterações</button>
+                        <a class="btn btn-danger" th:href="@{/carros/ui/deletar/{id}(id=${carros.id})}">Deletar</a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="form" th:if="${carros == null}">
+                <span class="badge">Carro não encontrado.</span>
+            </div>
+
+            <div class="preview" th:if="${carros != null}">
+                <img class="avatar" style="width:96px;height:96px" th:src="${carros.foto}" alt="Foto do carro">
+                <div>
+                    <div class="badge" th:text="'ID: ' + ${carros.id}">ID</div>
+                    <div style="margin-top:10px; color: rgba(255, 255, 255, 0.80)">Pré-visualização</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/script.js}" defer></script>
+
+</body>
+</html>
+
