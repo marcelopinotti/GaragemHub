@@ -8,6 +8,7 @@ import marcelo.HeroGarage.exception.IllegalArgumentException;
 import marcelo.HeroGarage.exception.PersonagemNotFoundException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Service
@@ -24,6 +25,7 @@ public class PersonagemService {
 
     public PersonagemDTO criar(PersonagemDTO personagemDTO) {
         PersonagemModel personagem = personagemMapper.map(personagemDTO);
+        atualizarCarrosRelacionados(personagemDTO, personagem);
         personagem = personagemRepository.save(personagem);
         return personagemMapper.map(personagem);
     }
@@ -57,7 +59,7 @@ public class PersonagemService {
         atribuirSeNaoNulo(personagemDTO.getGenero(), personagemExistente::setGenero);
         atribuirSeNaoNulo(personagemDTO.getFoto(), personagemExistente::setFoto);
         validarEAplicarIdade(personagemDTO.getIdade(), personagemExistente);
-        atualizarCarrosRelacionados(personagemDTO.getCarros(), personagemExistente);
+        atualizarCarrosRelacionados(personagemDTO, personagemExistente);
 
         PersonagemModel personagemSalvo = personagemRepository.save(personagemExistente);
         return personagemMapper.map(personagemSalvo);
@@ -70,15 +72,45 @@ public class PersonagemService {
         personagem.setIdade(idade);
     }
 
-    private void atualizarCarrosRelacionados(List<CarrosModel> novosCarros, PersonagemModel personagem) {
-        if (novosCarros == null) return;
+    private void atualizarCarrosRelacionados(PersonagemDTO personagemDTO, PersonagemModel personagem) {
+        List<Long> ids = personagemDTO.getCarrosId();
+        if (ids == null) {
+            List<CarrosModel> novosCarros = personagemDTO.getCarros();
+            if (novosCarros == null) return;
+            ids = novosCarros.stream()
+                    .map(CarrosModel::getId)
+                    .filter(Objects::nonNull)
+                    .toList();
+        }
 
-        List<Long> ids = novosCarros.stream()
-                .map(CarrosModel::getId)
-                .filter(java.util.Objects::nonNull)
-                .toList();
+        if (ids.isEmpty()) {
+            if (personagem.getId() != null) {
+                List<CarrosModel> atuais = carrosRepository.findByPersonagemId(personagem.getId());
+                atuais.forEach(carro -> carro.setPersonagem(null));
+            }
+            personagem.setCarros(List.of());
+            return;
+        }
 
         List<CarrosModel> carros = carrosRepository.findAllById(ids);
+        for (CarrosModel carro : carros) {
+            if (carro.getPersonagem() != null) {
+                Long donoAtual = carro.getPersonagem().getId();
+                Long donoNovo = personagem.getId();
+                if (donoNovo == null || !Objects.equals(donoAtual, donoNovo)) {
+                    throw new IllegalArgumentException("Carro já possui outro dono (id=" + donoAtual + ")");
+                }
+            }
+        }
+
+        if (personagem.getId() != null) {
+            List<CarrosModel> atuais = carrosRepository.findByPersonagemId(personagem.getId());
+            final List<Long> idsFinal = ids;
+            atuais.stream()
+                    .filter(carro -> carro.getId() != null && !idsFinal.contains(carro.getId()))
+                    .forEach(carro -> carro.setPersonagem(null));
+        }
+
         carros.forEach(carro -> carro.setPersonagem(personagem));
         personagem.setCarros(carros);
     }

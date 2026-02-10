@@ -6,20 +6,26 @@ import java.util.List;
 import java.util.function.Consumer;
 import marcelo.HeroGarage.exception.CarroNotFoundException;
 import marcelo.HeroGarage.exception.IllegalArgumentException;
+import marcelo.HeroGarage.Personagem.PersonagemModel;
+import marcelo.HeroGarage.Personagem.PersonagemRepository;
+import marcelo.HeroGarage.exception.PersonagemNotFoundException;
 
 @Service
 public class CarrosService {
 
     private final CarrosRepository carrosRepository;
     private final CarrosMapper carrosMapper;
+    private final PersonagemRepository personagemRepository;
 
-    public CarrosService(CarrosRepository carrosRepository, CarrosMapper carrosMapper) {
+    public CarrosService(CarrosRepository carrosRepository, CarrosMapper carrosMapper, PersonagemRepository personagemRepository) {
         this.carrosRepository = carrosRepository;
         this.carrosMapper = carrosMapper;
+        this.personagemRepository = personagemRepository;
     }
 
     public CarrosDTO criar(CarrosDTO carrosDTO) {
         CarrosModel carros = carrosMapper.map(carrosDTO);
+        aplicarPersonagemDoFormulario(carrosDTO, carros);
         carros = carrosRepository.save(carros);
         return carrosMapper.map(carros);
     }
@@ -52,7 +58,7 @@ public class CarrosService {
         atribuirSeNaoNulo(carrosDTO.getMarca(), carroExistente::setMarca);
         atribuirSeNaoNulo(carrosDTO.getModelo(), carroExistente::setModelo);
         validarEAplicarAno(carrosDTO.getAno(), carroExistente);
-        atribuirSeNaoNulo(carrosDTO.getPersonagem(), carroExistente::setPersonagem);
+        aplicarPersonagemDoFormulario(carrosDTO, carroExistente);
         atribuirSeNaoNulo(carrosDTO.getCambio(), carroExistente::setCambio);
         atribuirSeNaoNulo(carrosDTO.getCor(), carroExistente::setCor);
 
@@ -71,6 +77,18 @@ public class CarrosService {
         if (valor != null) {
             setter.accept(valor);
         }
+    }
+
+    private void aplicarPersonagemDoFormulario(CarrosDTO carrosDTO, CarrosModel carro) {
+        Long personagemId = carrosDTO.getPersonagemId();
+        if (personagemId == null) return;
+        if (personagemId == 0L) {
+            carro.setPersonagem(null);
+            return;
+        }
+        PersonagemModel personagem = personagemRepository.findById(personagemId)
+                .orElseThrow(() -> new PersonagemNotFoundException("Personagem não encontrado com o id: " + personagemId));
+        carro.setPersonagem(personagem);
     }
 
     public void deletar(Long id){
