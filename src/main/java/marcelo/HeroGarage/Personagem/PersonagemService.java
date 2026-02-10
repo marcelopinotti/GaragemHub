@@ -25,8 +25,8 @@ public class PersonagemService {
 
     public PersonagemDTO criar(PersonagemDTO personagemDTO) {
         PersonagemModel personagem = personagemMapper.map(personagemDTO);
-        atualizarCarrosRelacionados(personagemDTO, personagem);
         personagem = personagemRepository.save(personagem);
+        vincularCarros(personagemDTO.getCarrosId(), personagem);
         return personagemMapper.map(personagem);
     }
 
@@ -52,73 +52,24 @@ public class PersonagemService {
     }
 
     public PersonagemDTO atualizar(PersonagemDTO personagemDTO, Long id){
-        PersonagemModel personagemExistente = personagemRepository.findById(id)
+        PersonagemModel personagem = personagemRepository.findById(id)
                 .orElseThrow(() -> new PersonagemNotFoundException("Personagem não encontrado com o id: " + id));
-        atribuirSeNaoNulo(personagemDTO.getNome(), personagemExistente::setNome);
-        atribuirSeNaoNulo(personagemDTO.getDesenho(), personagemExistente::setDesenho);
-        atribuirSeNaoNulo(personagemDTO.getGenero(), personagemExistente::setGenero);
-        atribuirSeNaoNulo(personagemDTO.getFoto(), personagemExistente::setFoto);
-        validarEAplicarIdade(personagemDTO.getIdade(), personagemExistente);
-        atualizarCarrosRelacionados(personagemDTO, personagemExistente);
 
-        PersonagemModel personagemSalvo = personagemRepository.save(personagemExistente);
-        return personagemMapper.map(personagemSalvo);
-    }
-    private void validarEAplicarIdade(Integer idade, PersonagemModel personagem) {
-        if (idade == null) return;
-        if (idade <= 0) {
-            throw new IllegalArgumentException("Idade inválida: " + idade);
-        }
-        personagem.setIdade(idade);
-    }
+        atribuirSeNaoNulo(personagemDTO.getNome(), personagem::setNome);
+        atribuirSeNaoNulo(personagemDTO.getDesenho(), personagem::setDesenho);
+        atribuirSeNaoNulo(personagemDTO.getGenero(), personagem::setGenero);
+        atribuirSeNaoNulo(personagemDTO.getFoto(), personagem::setFoto);
 
-    private void atualizarCarrosRelacionados(PersonagemDTO personagemDTO, PersonagemModel personagem) {
-        List<Long> ids = personagemDTO.getCarrosId();
-        if (ids == null) {
-            List<CarrosModel> novosCarros = personagemDTO.getCarros();
-            if (novosCarros == null) return;
-            ids = novosCarros.stream()
-                    .map(CarrosModel::getId)
-                    .filter(Objects::nonNull)
-                    .toList();
-        }
-
-        if (ids.isEmpty()) {
-            if (personagem.getId() != null) {
-                List<CarrosModel> atuais = carrosRepository.findByPersonagemId(personagem.getId());
-                atuais.forEach(carro -> carro.setPersonagem(null));
+        if (personagemDTO.getIdade() != null) {
+            if (personagemDTO.getIdade() <= 0) {
+                throw new IllegalArgumentException("Idade inválida: " + personagemDTO.getIdade());
             }
-            personagem.setCarros(List.of());
-            return;
+            personagem.setIdade(personagemDTO.getIdade());
         }
 
-        List<CarrosModel> carros = carrosRepository.findAllById(ids);
-        for (CarrosModel carro : carros) {
-            if (carro.getPersonagem() != null) {
-                Long donoAtual = carro.getPersonagem().getId();
-                Long donoNovo = personagem.getId();
-                if (donoNovo == null || !Objects.equals(donoAtual, donoNovo)) {
-                    throw new IllegalArgumentException("Carro já possui outro dono (id=" + donoAtual + ")");
-                }
-            }
-        }
-
-        if (personagem.getId() != null) {
-            List<CarrosModel> atuais = carrosRepository.findByPersonagemId(personagem.getId());
-            final List<Long> idsFinal = ids;
-            atuais.stream()
-                    .filter(carro -> carro.getId() != null && !idsFinal.contains(carro.getId()))
-                    .forEach(carro -> carro.setPersonagem(null));
-        }
-
-        carros.forEach(carro -> carro.setPersonagem(personagem));
-        personagem.setCarros(carros);
-    }
-
-    private static <T> void atribuirSeNaoNulo(T valor, Consumer<T> setter) {
-        if (valor != null) {
-            setter.accept(valor);
-        }
+        vincularCarros(personagemDTO.getCarrosId(), personagem);
+        personagemRepository.save(personagem);
+        return personagemMapper.map(personagem);
     }
 
     public void deletar(Long id){
@@ -127,5 +78,30 @@ public class PersonagemService {
         }
         personagemRepository.deleteById(id);
     }
+    private void vincularCarros(List<Long> carrosIds, PersonagemModel personagem) {
+        if (carrosIds == null) return;
 
+        carrosRepository.findByPersonagemId(personagem.getId())
+                .forEach(c -> c.setPersonagem(null));
+
+        if (carrosIds.isEmpty()) {
+            personagem.setCarros(List.of());
+            return;
+        }
+
+        List<CarrosModel> carros = carrosRepository.findAllById(carrosIds);
+        for (CarrosModel carro : carros) {
+            if (carro.getPersonagem() != null && !Objects.equals(carro.getPersonagem().getId(), personagem.getId())) {
+                throw new IllegalArgumentException("Carro " + carro.getId() + " já tem outro dono");
+            }
+            carro.setPersonagem(personagem);
+        }
+        personagem.setCarros(carros);
+    }
+
+    private static <T> void atribuirSeNaoNulo(T valor, Consumer<T> setter) {
+        if (valor != null) {
+            setter.accept(valor);
+        }
+    }
 }

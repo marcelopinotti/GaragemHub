@@ -81,13 +81,14 @@ public class CarrosService {
 
     private void aplicarPersonagemDoFormulario(CarrosDTO carrosDTO, CarrosModel carro) {
         Long personagemId = carrosDTO.getPersonagemId();
+
         if (personagemId == null) return;
-        if (personagemId == 0L) {
-            carro.setPersonagem(null);
-            return;
-        }
-        PersonagemModel personagem = personagemRepository.findById(personagemId)
-                .orElseThrow(() -> new PersonagemNotFoundException("Personagem não encontrado com o id: " + personagemId));
+
+        PersonagemModel personagem = personagemId == 0L
+                ? null
+                : personagemRepository.findById(personagemId)
+                        .orElseThrow(() -> new PersonagemNotFoundException("Personagem não encontrado com o id: " + personagemId));
+
         carro.setPersonagem(personagem);
     }
 
