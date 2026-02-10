@@ -61,6 +61,18 @@
                                    style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
                         </div>
 
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted);">Carros (opcional)</label>
+                            <select multiple th:field="*{carrosIds}"
+                                    style="width: 100%; min-height: 120px; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--stroke); background: var(--card-2); color: var(--text); font-size: 15px;">
+                                <option th:if="${carrosDisponiveis == null or #lists.isEmpty(carrosDisponiveis)}" disabled>Sem carros disponíveis</option>
+                                <option th:each="carro : ${carrosDisponiveis}" th:value="${carro.id}"
+                                        th:text="${carro.nome + ' • ' + carro.marca}">
+                                    Carro
+                                </option>
+                            </select>
+                        </div>
+
                         <div class="actions">
                             <button type="submit" class="btn btn-primary">Salvar Personagem</button>
                             <a th:href="@{/personagens/ui/listar}" class="btn btn-muted">Cancelar</a>

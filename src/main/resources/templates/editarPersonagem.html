@@ -124,6 +124,17 @@
                         <input id="p-foto" type="text" th:field="*{foto}" placeholder="https://...">
                     </div>
 
+                    <div class="field full">
+                        <label for="p-carros">Carros (opcional)</label>
+                        <select id="p-carros" multiple th:field="*{carrosIds}" style="min-height: 120px;">
+                            <option th:if="${carrosDisponiveis == null or #lists.isEmpty(carrosDisponiveis)}" disabled>Sem carros disponíveis</option>
+                            <option th:each="carro : ${carrosDisponiveis}" th:value="${carro.id}"
+                                    th:text="${carro.nome + ' • ' + carro.marca}">
+                                Carro
+                            </option>
+                        </select>
+                    </div>
+
                     <div class="actions full" style="margin-top:8px">
                         <button class="btn btn-primary" type="submit">Salvar alterações</button>
                         <a class="btn btn-danger" th:href="@{/personagens/ui/deletar/{id}(id=${personagem.id})}">Deletar</a>
