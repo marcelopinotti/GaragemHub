@@ -6,9 +6,6 @@ Construída com **Spring Boot** para conectar heróis, mundos e veículos em um 
 > **Cardinalidade / ideia do domínio:**
 > - Um **Personagem** pode ter **vários Carros**.
 > - Um **Carro** tem **no máximo um dono** (um Personagem).
->
-> **Regra de universo/desenho:** personagens só podem se associar a carros do **mesmo** universo (ex.: **DC ↔ DC**).
-
 ---
 
 ## Visão geral
@@ -72,9 +69,18 @@ HeroGarage/
   - Validation
 - **Spring Data JPA / Hibernate**
 - **Flyway** (migrations em `src/main/resources/db/migrations`)
+- **Swagger / OpenAPI 3** (springdoc-openapi) — documentação interativa da API
 - **MySQL** (via Docker Compose)
 - **Lombok**
 - **spring-dotenv** (carrega variáveis a partir de `.env`)
+
+---
+
+## Documentação da API (Swagger)
+Após subir a aplicação, acesse a documentação interativa:
+
+- **Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- **OpenAPI JSON:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
 
 ---
 
