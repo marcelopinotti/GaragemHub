@@ -127,7 +127,7 @@
                     <div class="field full">
                         <label for="p-carros">Carros (opcional)</label>
                         <select id="p-carros" multiple th:field="*{carrosId}" style="min-height: 120px; background: rgba(30, 30, 40, 0.95);">
-                            <option th:if="${carrosDisponiveis == null or #lists.isEmpty(carrosDisponiveis)}" disabled style="background: #1e1e28; color: #fff;">Sem carros disponíveis</option>
+                            <option th:if="${carrosDisponiveis == null or #lists.isEmpty(carrosDisponiveis)}" value="" disabled style="background: #1e1e28; color: #fff;">Sem carros disponíveis</option>
                             <option th:each="carro : ${carrosDisponiveis}" th:value="${carro.id}"
                                     th:text="${carro.nome + ' • ' + carro.marca}"
                                     style="background: #1e1e28; color: #fff; padding: 8px;">
