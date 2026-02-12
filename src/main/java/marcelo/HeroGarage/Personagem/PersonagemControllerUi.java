@@ -6,7 +6,9 @@ import marcelo.HeroGarage.Carros.CarrosModel;
 import marcelo.HeroGarage.Carros.CarrosService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +29,11 @@ public class PersonagemControllerUi {
     public PersonagemControllerUi(PersonagemService personagemService, CarrosService carrosService) {
         this.personagemService = personagemService;
         this.carrosService = carrosService;
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.setDisallowedFields("carros");
     }
 
     @GetMapping("/listar")
@@ -65,8 +72,13 @@ public class PersonagemControllerUi {
     }
 
     @PostMapping("/editar/{id}")
-    public String salvarEdicao(@PathVariable Long id, @ModelAttribute("personagem") PersonagemDTO personagem) {
-        personagemService.atualizar(personagem, id);
+    public String salvarEdicao(@PathVariable Long id, @ModelAttribute("personagem") PersonagemDTO personagem, RedirectAttributes redirectAttributes) {
+        try {
+            personagemService.atualizar(personagem, id);
+            redirectAttributes.addFlashAttribute("mensagem", "Personagem atualizado com sucesso!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("erro", "Erro ao atualizar: " + e.getMessage());
+        }
         return "redirect:/personagens/ui/listar";
     }
 

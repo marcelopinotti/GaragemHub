@@ -4,10 +4,10 @@ package marcelo.HeroGarage.Personagem;
 import marcelo.HeroGarage.Carros.CarrosModel;
 import marcelo.HeroGarage.Carros.CarrosRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import marcelo.HeroGarage.exception.PersonagemNotFoundException;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 @Service
@@ -50,6 +50,7 @@ public class PersonagemService {
                 .orElseThrow(() -> new PersonagemNotFoundException("Personagem não encontrado com o id: " + id));
     }
 
+    @Transactional
     public PersonagemDTO atualizar(PersonagemDTO personagemDTO, Long id){
         PersonagemModel personagem = personagemRepository.findById(id)
                 .orElseThrow(() -> new PersonagemNotFoundException("Personagem não encontrado com o id: " + id));
@@ -77,18 +78,24 @@ public class PersonagemService {
     private void vincularCarros(List<Long> carrosIds, PersonagemModel personagem) {
         if (carrosIds == null) return;
 
-        carrosRepository.findByPersonagemId(personagem.getId())
-                .forEach(c -> c.setPersonagem(null));
+        // Desvincular carros antigos
+        List<CarrosModel> carrosAntigos = carrosRepository.findByPersonagemId(personagem.getId());
+        for (CarrosModel carro : carrosAntigos) {
+            carro.setPersonagem(null);
+        }
+        carrosRepository.saveAll(carrosAntigos);
 
         if (carrosIds.isEmpty()) {
             personagem.setCarros(List.of());
             return;
         }
 
+        // Vincular novos carros
         List<CarrosModel> carros = carrosRepository.findAllById(carrosIds);
         for (CarrosModel carro : carros) {
             carro.setPersonagem(personagem);
         }
+        carrosRepository.saveAll(carros);
         personagem.setCarros(carros);
     }
 
