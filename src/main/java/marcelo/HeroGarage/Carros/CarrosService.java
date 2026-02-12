@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.function.Consumer;
 import marcelo.HeroGarage.exception.CarroNotFoundException;
-import marcelo.HeroGarage.exception.IllegalArgumentException;
 import marcelo.HeroGarage.Personagem.PersonagemModel;
 import marcelo.HeroGarage.Personagem.PersonagemRepository;
 import marcelo.HeroGarage.exception.PersonagemNotFoundException;
@@ -66,10 +65,7 @@ public class CarrosService {
         return carrosMapper.map(carroSalvo);
     }
     private void validarEAplicarAno(Integer ano, CarrosModel carro) {
-        if (ano == null) return;
-        if (ano <= 0) {
-            throw new IllegalArgumentException("Ano inválido: " + ano);
-        }
+        if (ano == null || ano <= 0) return;
         carro.setAno(ano);
     }
 

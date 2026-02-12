@@ -4,7 +4,6 @@ package marcelo.HeroGarage.Personagem;
 import marcelo.HeroGarage.Carros.CarrosModel;
 import marcelo.HeroGarage.Carros.CarrosRepository;
 import org.springframework.stereotype.Service;
-import marcelo.HeroGarage.exception.IllegalArgumentException;
 import marcelo.HeroGarage.exception.PersonagemNotFoundException;
 
 import java.util.List;
@@ -60,10 +59,7 @@ public class PersonagemService {
         atribuirSeNaoNulo(personagemDTO.getGenero(), personagem::setGenero);
         atribuirSeNaoNulo(personagemDTO.getFoto(), personagem::setFoto);
 
-        if (personagemDTO.getIdade() != null) {
-            if (personagemDTO.getIdade() <= 0) {
-                throw new IllegalArgumentException("Idade inválida: " + personagemDTO.getIdade());
-            }
+        if (personagemDTO.getIdade() != null && personagemDTO.getIdade() > 0) {
             personagem.setIdade(personagemDTO.getIdade());
         }
 
@@ -91,9 +87,6 @@ public class PersonagemService {
 
         List<CarrosModel> carros = carrosRepository.findAllById(carrosIds);
         for (CarrosModel carro : carros) {
-            if (carro.getPersonagem() != null && !Objects.equals(carro.getPersonagem().getId(), personagem.getId())) {
-                throw new IllegalArgumentException("Carro " + carro.getId() + " já tem outro dono");
-            }
             carro.setPersonagem(personagem);
         }
         personagem.setCarros(carros);
