@@ -43,6 +43,8 @@ public class CarrosControllerUi {
         CarrosDTO carros = carrosService.buscarPorId(id);
         if (carros.getPersonagem() != null) {
             carros.setPersonagemId(carros.getPersonagem().getId());
+        } else {
+            carros.setPersonagemId(0L);
         }
         model.addAttribute("carros", carros);
         model.addAttribute("personagensDisponiveis", personagemService.listarTodos());

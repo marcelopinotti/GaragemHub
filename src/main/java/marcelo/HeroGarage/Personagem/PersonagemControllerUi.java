@@ -46,12 +46,14 @@ public class PersonagemControllerUi {
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model) {
         PersonagemDTO personagem = personagemService.buscarPorId(id);
-        if (personagem.getCarros() != null) {
+        if (personagem.getCarros() != null && !personagem.getCarros().isEmpty()) {
             List<Long> ids = personagem.getCarros().stream()
                     .map(CarrosModel::getId)
                     .filter(Objects::nonNull)
                     .toList();
             personagem.setCarrosId(ids);
+        } else {
+            personagem.setCarrosId(List.of());
         }
         model.addAttribute("personagem", personagem);
         List<CarrosDTO> carrosDisponiveis = carrosService.listarTodos().stream()
